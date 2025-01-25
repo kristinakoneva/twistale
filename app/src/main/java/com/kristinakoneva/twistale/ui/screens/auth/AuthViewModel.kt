@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.kristinakoneva.twistale.domain.user.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -18,6 +20,9 @@ class AuthViewModel @Inject constructor(
     private val stateFlow: MutableStateFlow<AuthState> by lazy { MutableStateFlow(AuthState()) }
     val state: StateFlow<AuthState> get() = stateFlow
 
+    private val navigationChannel = Channel<AuthEvent>(Channel.BUFFERED)
+    val navigation = navigationChannel.receiveAsFlow()
+
     companion object {
         private const val MIN_PASSWORD_LENGTH = 6
     }
@@ -27,7 +32,7 @@ class AuthViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             if (userRepository.getCurrentUser() != null) {
-                // TODO: User already logged in
+                navigationChannel.send(AuthEvent.SuccessfulAuth)
             }
         }
     }
@@ -74,12 +79,12 @@ class AuthViewModel @Inject constructor(
                     userRepository.registerUser(state.value.email, state.value.password, state.value.name)
                 }
                 if (userRepository.getCurrentUser() != null) {
-                    // TODO: User logged in
+                    navigationChannel.send(AuthEvent.SuccessfulAuth)
                 } else {
-                    // TODO: Error
+                    navigationChannel.send(AuthEvent.FailedAuth)
                 }
             } catch (e: Exception) {
-               // TODO: Error
+                navigationChannel.send(AuthEvent.FailedAuth)
             } finally {
                 resetFields()
             }

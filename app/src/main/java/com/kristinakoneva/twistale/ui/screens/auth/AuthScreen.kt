@@ -1,5 +1,6 @@
 package com.kristinakoneva.twistale.ui.screens.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,10 +23,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,8 +48,25 @@ data object AuthRoute
 
 @Composable
 fun AuthScreen(
+    navigateToGameRoom: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(viewModel.navigation) {
+        viewModel.navigation.collect { event ->
+            when (event) {
+                is AuthEvent.SuccessfulAuth -> navigateToGameRoom()
+                is AuthEvent.FailedAuth -> {
+                    focusManager.clearFocus()
+                    Toast.makeText(context, "Failed to authenticate", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     viewModel.state.collectAsStateWithLifecycle().value.let { state ->
         AuthScreenContent(
             name = state.name,
@@ -63,7 +83,8 @@ fun AuthScreen(
             isConfirmPasswordValid = state.isConfirmPasswordValid,
             isLogin = state.isLogin,
             onPrimaryButtonClicked = viewModel::onPrimaryButtonClicked,
-            onSecondaryButtonClicked = viewModel::onSecondaryButtonClicked
+            onSecondaryButtonClicked = viewModel::onSecondaryButtonClicked,
+            modifier = modifier,
         )
     }
 }
@@ -84,7 +105,8 @@ fun AuthScreenContent(
     isConfirmPasswordValid: Boolean,
     isLogin: Boolean,
     onPrimaryButtonClicked: () -> Unit,
-    onSecondaryButtonClicked: () -> Unit
+    onSecondaryButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     val onNameValueChange = remember(name, onNameInputFieldValueChange) { { name: String -> onNameInputFieldValueChange(name) } }

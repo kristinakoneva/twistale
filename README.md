@@ -1,2 +1,2 @@
-# twistale
-Project for the Software Lifecycle Management Course
+# Twistale
+_Developed by Kristina Koneva (249013)_

@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
+    id("kotlinx-serialization")
 }
 
 android {
@@ -64,4 +65,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.serialization.json)
 }

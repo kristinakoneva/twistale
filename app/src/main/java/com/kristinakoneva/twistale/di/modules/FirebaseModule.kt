@@ -1,4 +1,4 @@
-package com.kristinakoneva.twistale.di
+package com.kristinakoneva.twistale.di.modules
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

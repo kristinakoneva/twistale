@@ -12,9 +12,9 @@ class PreferencesSourceImpl @Inject constructor(
         const val KEY_GAME_ROOM_ID = "game_room_id"
     }
 
-    override suspend fun getCurrentGameRoomId(): Int = sharedPrefs.getInt(KEY_GAME_ROOM_ID, -1)
+    override fun getCurrentGameRoomId(): Int = sharedPrefs.getInt(KEY_GAME_ROOM_ID, -1)
 
-    override suspend fun setCurrentGameRoomId(gameRoomId: Int) {
+    override fun setCurrentGameRoomId(gameRoomId: Int) {
         sharedPrefs.edit().putInt(KEY_GAME_ROOM_ID, gameRoomId).apply()
     }
 }

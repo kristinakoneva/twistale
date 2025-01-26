@@ -2,7 +2,7 @@ package com.kristinakoneva.twistale.data.prefs
 
 interface PreferencesSource {
 
-    suspend fun getCurrentGameRoomId(): Int
+    fun getCurrentGameRoomId(): Int
 
-    suspend fun setCurrentGameRoomId(gameRoomId: Int)
+    fun setCurrentGameRoomId(gameRoomId: Int)
 }

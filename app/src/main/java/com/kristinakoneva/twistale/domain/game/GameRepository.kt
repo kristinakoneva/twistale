@@ -1,9 +1,10 @@
-package com.kristinakoneva.twistale.data.database
+package com.kristinakoneva.twistale.domain.game
 
-import com.kristinakoneva.twistale.data.database.models.Game
+import com.kristinakoneva.twistale.domain.game.models.Game
 import kotlinx.coroutines.flow.Flow
 
-interface DatabaseSource {
+interface GameRepository {
+
     suspend fun createGameRoom(): Int
 
     suspend fun joinGameRoom(gameRoomId: Int)
@@ -16,5 +17,5 @@ interface DatabaseSource {
 
     suspend fun leaveGameRoom()
 
-    suspend fun isHostPlayer(): Boolean
+    suspend fun isMainPlayer(): Boolean
 }

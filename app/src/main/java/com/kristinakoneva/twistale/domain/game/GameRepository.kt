@@ -11,11 +11,15 @@ interface GameRepository {
 
     suspend fun startGame()
 
-    fun observeGameRoom(): Flow<Game>
+    fun observeGameRoom(): Flow<Game?>
 
     suspend fun endGame()
 
     suspend fun leaveGameRoom()
 
     suspend fun isMainPlayer(): Boolean
+
+    fun getCurrentGameRoomId(): Int
+
+    suspend fun submitWritingRound(taleId: Int, text: String)
 }

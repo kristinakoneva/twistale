@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -33,9 +34,18 @@ data object GameRoomRoute
 
 @Composable
 fun GameRoomScreen(
-    viewModel: GameRoomViewModel = hiltViewModel(),
+    onNavigateToGamePlay: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: GameRoomViewModel = hiltViewModel(),
 ) {
+
+    LaunchedEffect(viewModel.navigation) {
+        viewModel.navigation.collect { event ->
+            when (event) {
+                is GameRoomEvent.NavigateToGamePlay -> onNavigateToGamePlay()
+            }
+        }
+    }
     viewModel.state.collectAsStateWithLifecycle().value.let { state ->
         GameRoomContent(
             gameRoomId = state.roomId,
@@ -49,6 +59,8 @@ fun GameRoomScreen(
             roomIdInput = state.roomIdInput,
             onRoomIdInputChange = viewModel::onRoomIdInputFieldValueChanged,
             canStartGame = state.canStartGame,
+            startGame = viewModel::startGame,
+            leaveGameRoom = viewModel::leaveGameRoom,
         )
     }
 }
@@ -63,6 +75,8 @@ fun GameRoomContent(
     onRoomIdInputChange: (String) -> Unit,
     createGameRoom: () -> Unit,
     joinGameRoom: () -> Unit,
+    leaveGameRoom: () -> Unit,
+    startGame: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -72,6 +86,14 @@ fun GameRoomContent(
             modifier = modifier.padding(horizontal = spacing_3),
             contentPadding = padding,
         ) {
+            item {
+                Button(
+                    onClick = leaveGameRoom,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(text = "Leave room")
+                }
+            }
             item {
                 Spacer(modifier = Modifier.height(spacing_3))
                 Text(
@@ -158,7 +180,7 @@ fun GameRoomContent(
                     Spacer(modifier = Modifier.height(spacing_2))
                     if (isHostPlayer) {
                         Button(
-                            onClick = createGameRoom,
+                            onClick = startGame,
                             modifier = Modifier.fillMaxWidth(),
                             enabled = canStartGame,
                         ) {

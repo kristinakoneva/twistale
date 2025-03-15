@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kristinakoneva.twistale.data.database.models.Game
+import com.kristinakoneva.twistale.data.database.models.Tale
 import com.kristinakoneva.twistale.data.prefs.PreferencesSource
 import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
@@ -21,15 +22,14 @@ class DatabaseSourceImpl @Inject constructor(
         private const val COLLECTION_GAMES = "games"
         private const val FIELD_USER_ID = "userId"
         private const val FIELD_NAME = "name"
-        private const val FIELD_IS_HOST_PLAYER = "isHostPlayer"
+        private const val FIELD_HOST_PLAYER = "hostPlayer"
         private const val FIELD_ORDINAL_OF_JOINING = "ordinalOfJoining"
         private const val FIELD_PLAYERS = "players"
         private const val FIELD_STATUS = "status"
         private const val FIELD_ROUNDS = "rounds"
+        private const val FIELD_TALES = "tales"
         private const val FIELD_NUMBER = "number"
         private const val FIELD_TYPE = "type"
-        private const val FIELD_PHRASES = "phrases"
-        private const val FIELD_DRAWINGS = "drawings"
         private const val GAME_STATUS_WAITING = "WAITING"
         private const val GAME_STATUS_IN_PROGRESS = "IN_PROGRESS"
         private const val GAME_STATUS_FINISHED = "FINISHED"
@@ -55,49 +55,28 @@ class DatabaseSourceImpl @Inject constructor(
         ).await()
     }
 
-    override fun observeGameRoom(): Flow<Game> = callbackFlow {
+    override fun observeGameRoom(): Flow<Game?> = callbackFlow {
         val documentRef = firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString())
 
         val registration = documentRef.addSnapshotListener { snapshot, e ->
             if (e != null) {
-                Log.w(TAG, "Game Room Observing - Listen failed.", e)
+                Log.w(TAG, "Game Room Observing in source - Listen failed.", e)
                 close(e)
+                trySend(null)
                 return@addSnapshotListener
             }
 
-            if (snapshot != null && snapshot.exists()) {
-                Log.d(TAG, "Game Room Observing - Current data: ${snapshot.data}")
+            if (snapshot != null && snapshot.exists() && snapshot.data != null) {
+                Log.d(TAG, "Game Room Observing in source - Current data: ${snapshot.data}")
                 val game = snapshot.toObject(Game::class.java)
                 if (game != null) {
                     trySend(game)
-                    val isCurrentPlayerHost = game.players.first { it.userId == firebaseAuth.currentUser?.uid }.isHostPlayer
-
-                    if (isCurrentPlayerHost) {
-                        val shouldStartNextRound = when (game.rounds.last().type) {
-                            ROUND_TYPE_WRITING -> {
-                                game.rounds.last().phrases.size == game.players.size
-                            }
-
-                            ROUND_TYPE_DRAWING -> {
-                                game.rounds.last().drawings.size == game.players.size
-                            }
-
-                            else -> {
-                                false
-                            }
-                        }
-                        if (shouldStartNextRound) {
-                            startNextRound()
-                        }
-                    }
                 }
-            } else {
-                Log.d(TAG, "Game Room Observing - Current data: null")
             }
         }
 
         awaitClose {
-            Log.d(TAG, "Game Room Observing - Snapshot listener removed.")
+            Log.d(TAG, "Game Room Observing in source - Snapshot listener removed.")
             registration.remove()
         }
     }
@@ -108,7 +87,7 @@ class DatabaseSourceImpl @Inject constructor(
     }
 
     override suspend fun leaveGameRoom() {
-        val gameStatus = firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).get().result?.get(
+        val gameStatus = firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).get().await().data?.get(
             FIELD_STATUS
         ) as String
         if (gameStatus == GAME_STATUS_IN_PROGRESS) {
@@ -120,7 +99,29 @@ class DatabaseSourceImpl @Inject constructor(
     override suspend fun isHostPlayer(): Boolean = firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString())
         .get().await().toObject(Game::class.java)?.players?.first {
             it.userId == firebaseAuth.currentUser?.uid
-        }?.isHostPlayer ?: false
+        }?.hostPlayer ?: false
+
+    override suspend fun submitRound(taleId: Int, input: String) {
+        val game = firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).get().await()
+            .toObject(Game::class.java)
+        val roundToUpdate = game?.rounds?.last()
+        val newTale = Tale(id = taleId, input = input, playerId = firebaseAuth.currentUser?.uid!!)
+        val updatedRounds = game?.rounds?.map {
+            if (it.number == roundToUpdate?.number) {
+                val updatedTales = it.tales + newTale
+                hashMapOf(
+                    FIELD_NUMBER to it.number,
+                    FIELD_TYPE to it.type,
+                    FIELD_TALES to updatedTales,
+                )
+            } else {
+                it
+            }
+        }
+        firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).update(
+            FIELD_ROUNDS, updatedRounds,
+        ).await()
+    }
 
     private fun generateUniqueGameRoomId(): Int {
         val potentialGameRoomId = (1000..9999).random()
@@ -143,7 +144,7 @@ class DatabaseSourceImpl @Inject constructor(
                             FIELD_USER_ID to currentUser.uid,
                             FIELD_NAME to currentUser.displayName,
                             FIELD_ORDINAL_OF_JOINING to 1,
-                            FIELD_IS_HOST_PLAYER to true,
+                            FIELD_HOST_PLAYER to true,
                         )
                     ),
                     FIELD_STATUS to GAME_STATUS_WAITING,
@@ -151,8 +152,7 @@ class DatabaseSourceImpl @Inject constructor(
                         hashMapOf(
                             FIELD_NUMBER to 1,
                             FIELD_TYPE to ROUND_TYPE_WRITING,
-                            FIELD_PHRASES to emptyMap<String, String>(),
-                            FIELD_DRAWINGS to emptyMap<String, String>(),
+                            FIELD_TALES to emptyList<Tale>(),
                         )
                     )
                 )
@@ -167,7 +167,7 @@ class DatabaseSourceImpl @Inject constructor(
                     FIELD_USER_ID to currentUser.uid,
                     FIELD_NAME to currentUser.displayName,
                     FIELD_ORDINAL_OF_JOINING to ordinalOfJoining,
-                    FIELD_IS_HOST_PLAYER to false
+                    FIELD_HOST_PLAYER to false,
                 )
             )
             firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).update(
@@ -176,7 +176,7 @@ class DatabaseSourceImpl @Inject constructor(
         }
     }
 
-    private fun startNextRound() {
+    private suspend fun startNextRound() {
         val gameRoomId = prefs.getCurrentGameRoomId()
         val game = firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).get().result?.toObject(Game::class.java)
         val currentRound = game?.rounds?.last()
@@ -191,12 +191,11 @@ class DatabaseSourceImpl @Inject constructor(
             hashMapOf(
                 FIELD_NUMBER to nextRoundNumber,
                 FIELD_TYPE to nextRoundType,
-                FIELD_PHRASES to emptyMap<String, String>(),
-                FIELD_DRAWINGS to emptyMap<String, String>(),
+                FIELD_TALES to emptyList<Tale>(),
             )
         )
         firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).update(
             FIELD_ROUNDS, updatedRounds,
-        )
+        ).await()
     }
 }

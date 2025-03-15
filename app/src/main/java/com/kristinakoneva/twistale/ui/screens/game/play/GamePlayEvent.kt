@@ -1,4 +1,6 @@
 package com.kristinakoneva.twistale.ui.screens.game.play
 
-class GamePlayEvent {
+sealed interface GamePlayEvent {
+
+    data object NavigateToGameRoom : GamePlayEvent
 }

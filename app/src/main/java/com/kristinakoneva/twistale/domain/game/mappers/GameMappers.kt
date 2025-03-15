@@ -5,9 +5,11 @@ import com.kristinakoneva.twistale.domain.game.models.GameStatus
 import com.kristinakoneva.twistale.domain.game.models.Player
 import com.kristinakoneva.twistale.domain.game.models.Round
 import com.kristinakoneva.twistale.domain.game.models.RoundType
+import com.kristinakoneva.twistale.domain.game.models.Tale
 import com.kristinakoneva.twistale.data.database.models.Game as DataGame
 import com.kristinakoneva.twistale.data.database.models.Player as DataPlayer
 import com.kristinakoneva.twistale.data.database.models.Round as DataRound
+import com.kristinakoneva.twistale.data.database.models.Tale as DataTale
 
 fun DataGame.toDomainGame() = Game(
     players = players.map { it.toDomainPlayer() },
@@ -19,16 +21,17 @@ fun DataPlayer.toDomainPlayer() = Player(
     userId = userId,
     name = name,
     ordinalOfJoining = ordinalOfJoining,
-    isHostPlayer = isHostPlayer
+    isHostPlayer = hostPlayer
 )
 
 fun DataRound.toDomainRound(players: List<DataPlayer>) = Round(
     number = number,
     type = RoundType.valueOf(type),
-    phrases = phrases.map { phrasesItem ->
-        players.first { it.userId == phrasesItem.key }.toDomainPlayer() to phrasesItem.value
-    }.toMap(),
-    drawings = drawings.map { drawingsItem ->
-        players.first { it.userId == drawingsItem.key }.toDomainPlayer() to drawingsItem.value
-    }.toMap(),
+    tales = tales.map { it.toDomainTale(players) },
+)
+
+fun DataTale.toDomainTale(players: List<DataPlayer>) = Tale(
+    id = id,
+    player = players.find { it.userId == playerId }?.toDomainPlayer()!!,
+    input = input,
 )

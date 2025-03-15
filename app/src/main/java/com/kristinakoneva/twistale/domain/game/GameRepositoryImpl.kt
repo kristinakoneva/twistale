@@ -1,6 +1,7 @@
 package com.kristinakoneva.twistale.domain.game
 
 import com.kristinakoneva.twistale.data.database.DatabaseSource
+import com.kristinakoneva.twistale.data.prefs.PreferencesSource
 import com.kristinakoneva.twistale.domain.game.mappers.toDomainGame
 import com.kristinakoneva.twistale.domain.game.models.Game
 import javax.inject.Inject
@@ -11,6 +12,7 @@ import kotlinx.coroutines.withContext
 
 class GameRepositoryImpl @Inject constructor(
     private val database: DatabaseSource,
+    private val preferences: PreferencesSource,
 ) : GameRepository {
 
     override suspend fun createGameRoom(): Int = withContext(Dispatchers.IO) {
@@ -25,8 +27,8 @@ class GameRepositoryImpl @Inject constructor(
         database.startGame()
     }
 
-    override fun observeGameRoom(): Flow<Game> = database.observeGameRoom().transform {
-        emit(it.toDomainGame())
+    override fun observeGameRoom(): Flow<Game?> = database.observeGameRoom().transform {
+        emit(it?.toDomainGame())
     }
 
     override suspend fun endGame() = withContext(Dispatchers.IO) {
@@ -39,5 +41,11 @@ class GameRepositoryImpl @Inject constructor(
 
     override suspend fun isMainPlayer(): Boolean = withContext(Dispatchers.IO) {
         database.isHostPlayer()
+    }
+
+    override fun getCurrentGameRoomId(): Int = preferences.getCurrentGameRoomId()
+
+    override suspend fun submitWritingRound(taleId: Int, text: String) = withContext(Dispatchers.IO) {
+        database.submitRound(taleId, text)
     }
 }

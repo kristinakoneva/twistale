@@ -6,6 +6,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.kristinakoneva.twistale.ui.screens.auth.AuthRoute
 import com.kristinakoneva.twistale.ui.screens.auth.AuthScreen
+import com.kristinakoneva.twistale.ui.screens.game.play.GamePlayRoute
+import com.kristinakoneva.twistale.ui.screens.game.play.GamePlayScreen
 import com.kristinakoneva.twistale.ui.screens.game.room.GameRoomRoute
 import com.kristinakoneva.twistale.ui.screens.game.room.GameRoomScreen
 
@@ -27,7 +29,22 @@ fun NavHost() {
             )
         }
         composable<GameRoomRoute> {
-            GameRoomScreen()
+            GameRoomScreen(
+                onNavigateToGamePlay = {
+                    navController.navigate(GamePlayRoute, navOptions = navOptions {
+                        popUpTo(GameRoomRoute) { inclusive = true }
+                    })
+                }
+            )
+        }
+        composable<GamePlayRoute> {
+            GamePlayScreen(
+                onNavigateToGameRoom = {
+                    navController.navigate(GameRoomRoute, navOptions = navOptions {
+                        popUpTo(GamePlayRoute) { inclusive = true }
+                    })
+                }
+            )
         }
     }
 }

@@ -10,11 +10,13 @@ interface DatabaseSource {
 
     suspend fun startGame()
 
-    fun observeGameRoom(): Flow<Game>
+    fun observeGameRoom(): Flow<Game?>
 
     suspend fun endGame()
 
     suspend fun leaveGameRoom()
 
     suspend fun isHostPlayer(): Boolean
+
+    suspend fun submitRound(taleId: Int, text: String)
 }

@@ -10,6 +10,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,7 +22,8 @@ class GameRoomViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val MIN_PLAYERS = 3
+        // TODO: Update to 3 after testing
+        private const val MIN_PLAYERS = 2
     }
 
     private val stateFlow: MutableStateFlow<GameRoomState> by lazy { MutableStateFlow(GameRoomState()) }
@@ -30,11 +32,21 @@ class GameRoomViewModel @Inject constructor(
     private val navigationChannel = Channel<GameRoomEvent>(Channel.BUFFERED)
     val navigation = navigationChannel.receiveAsFlow()
 
+    init {
+        viewModelScope.launch {
+            if (gameRepository.getCurrentGameRoomId() != -1) {
+                stateFlow.update {
+                    it.copy(roomId = gameRepository.getCurrentGameRoomId())
+                }
+            }
+            startWaitingForGameToStart()
+        }
+    }
+
     fun createGameRoom() = viewModelScope.launch {
         stateFlow.update {
             it.copy(roomId = gameRepository.createGameRoom(), isHostPlayer = true)
         }
-        startWaitingForGameToStart()
     }
 
     fun joinGameRoom(gameRoomId: Int) = viewModelScope.launch {
@@ -42,7 +54,10 @@ class GameRoomViewModel @Inject constructor(
         stateFlow.update {
             it.copy(roomId = gameRoomId)
         }
-        startWaitingForGameToStart()
+    }
+
+    fun startGame() = viewModelScope.launch {
+        gameRepository.startGame()
     }
 
     fun onRoomIdInputFieldValueChanged(input: String) {
@@ -52,20 +67,30 @@ class GameRoomViewModel @Inject constructor(
     }
 
     private suspend fun startWaitingForGameToStart() {
-        gameRepository.observeGameRoom().collect { game ->
-            stateFlow.update {
-                it.copy(
-                    playersInRoom = game.players,
-                )
-            }
-            if (game.players.first { it.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer && game.players.size >= MIN_PLAYERS) {
+        gameRepository.observeGameRoom().collectLatest { game ->
+            if (game != null) {
                 stateFlow.update {
-                    it.copy(canStartGame = true)
+                    it.copy(
+                        playersInRoom = game.players,
+                        isHostPlayer = game.players.first { player -> player.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer
+                    )
+                }
+                if (game.players.first { it.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer && game.players.size >= MIN_PLAYERS) {
+                    stateFlow.update {
+                        it.copy(canStartGame = true)
+                    }
+                }
+                if (game.status == GameStatus.IN_PROGRESS) {
+                    navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
                 }
             }
-            if (game.status == GameStatus.IN_PROGRESS) {
-                navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
-            }
+        }
+    }
+
+    fun leaveGameRoom() = viewModelScope.launch {
+        gameRepository.leaveGameRoom()
+        stateFlow.update {
+            it.copy(roomId = null)
         }
     }
 }

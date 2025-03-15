@@ -4,5 +4,5 @@ data class Player(
     val userId: String = "",
     val name: String = "",
     val ordinalOfJoining: Int = 0,
-    val isHostPlayer: Boolean = false
+    val hostPlayer: Boolean = false,
 )

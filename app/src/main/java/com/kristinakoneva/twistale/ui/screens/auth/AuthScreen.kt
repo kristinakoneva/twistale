@@ -49,8 +49,8 @@ data object AuthRoute
 @Composable
 fun AuthScreen(
     navigateToGameRoom: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current

@@ -1,4 +1,12 @@
 package com.kristinakoneva.twistale.ui.screens.game.play
 
-class GamePlayState {
-}
+import com.kristinakoneva.twistale.domain.game.models.RoundType
+
+data class GamePlayState(
+    val roundType: RoundType = RoundType.WRITING,
+    val textInput: String = "",
+    val drawingInput: String = "",
+    val textHint: String = "",
+    val drawingHint: String = "",
+    val isWaiting: Boolean = false,
+)

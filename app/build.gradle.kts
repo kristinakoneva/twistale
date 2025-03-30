@@ -65,6 +65,9 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(platform(libs.firebase.bom))
     implementation(libs.serialization.json)
 }

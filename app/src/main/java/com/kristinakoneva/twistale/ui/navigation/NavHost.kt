@@ -10,6 +10,8 @@ import com.kristinakoneva.twistale.ui.screens.game.play.GamePlayRoute
 import com.kristinakoneva.twistale.ui.screens.game.play.GamePlayScreen
 import com.kristinakoneva.twistale.ui.screens.game.room.GameRoomRoute
 import com.kristinakoneva.twistale.ui.screens.game.room.GameRoomScreen
+import com.kristinakoneva.twistale.ui.screens.game.story.StoryRoute
+import com.kristinakoneva.twistale.ui.screens.game.story.StoryScreen
 
 @Composable
 fun NavHost() {
@@ -43,8 +45,16 @@ fun NavHost() {
                     navController.navigate(GameRoomRoute, navOptions = navOptions {
                         popUpTo(GamePlayRoute) { inclusive = true }
                     })
+                },
+                onNavigateToStory = {
+                    navController.navigate(StoryRoute, navOptions = navOptions {
+                        popUpTo(GamePlayRoute) { inclusive = true }
+                    })
                 }
             )
+        }
+        composable<StoryRoute> {
+            StoryScreen()
         }
     }
 }

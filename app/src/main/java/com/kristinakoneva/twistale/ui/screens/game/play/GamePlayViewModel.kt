@@ -1,9 +1,11 @@
 package com.kristinakoneva.twistale.ui.screens.game.play
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kristinakoneva.twistale.domain.game.GameRepository
 import com.kristinakoneva.twistale.domain.game.models.Game
+import com.kristinakoneva.twistale.domain.game.models.GameStatus
 import com.kristinakoneva.twistale.domain.game.models.RoundType
 import com.kristinakoneva.twistale.domain.user.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +39,7 @@ class GamePlayViewModel @Inject constructor(
     private fun observeGame() = viewModelScope.launch {
         gameRepository.observeGameRoom().collectLatest { game ->
             if (game != null) {
+                checkIfShouldNavigateToStory(game)
                 val currentRound = game.rounds.last()
                 stateFlow.update {
                     it.copy(
@@ -76,6 +79,7 @@ class GamePlayViewModel @Inject constructor(
                     )
                 }
                 checkIfHasCompletedRound(game)
+                checkIfShouldStartNextRoundOrEndGame(game)
             }
         }
     }
@@ -101,15 +105,31 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    fun onSubmit() = viewModelScope.launch {
+    private suspend fun checkIfShouldStartNextRoundOrEndGame(game: Game) {
+        if (game.rounds.size >= game.players.size) {
+            gameRepository.finishGame()
+            return
+        }
+        if (game.rounds.last().tales.size == game.players.size) {
+            gameRepository.startNextRound()
+        }
+    }
+
+    fun onSubmit(bitmap: Bitmap? = null) = viewModelScope.launch {
         when (stateFlow.value.roundType) {
             RoundType.WRITING -> {
                 gameRepository.submitWritingRound(taleId = currentTaleId, text = stateFlow.value.textInput)
             }
 
             RoundType.DRAWING -> {
-
+                gameRepository.submitDrawingRound(taleId = currentTaleId, image = bitmap!!)
             }
+        }
+    }
+
+    private fun checkIfShouldNavigateToStory(game: Game) {
+        if (game.status == GameStatus.FINISHED) {
+            navigationChannel.trySend(GamePlayEvent.NavigateToStory)
         }
     }
 }

@@ -6,6 +6,8 @@ import com.kristinakoneva.twistale.data.database.DatabaseSource
 import com.kristinakoneva.twistale.data.database.DatabaseSourceImpl
 import com.kristinakoneva.twistale.data.prefs.PreferencesSource
 import com.kristinakoneva.twistale.data.prefs.PreferencesSourceImpl
+import com.kristinakoneva.twistale.data.storage.StorageSource
+import com.kristinakoneva.twistale.data.storage.StorageSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,4 +24,7 @@ interface SourcesModule {
 
     @Binds
     fun bindPreferencesSource(source: PreferencesSourceImpl): PreferencesSource
+
+    @Binds
+    fun bindStorageSource(source: StorageSourceImpl): StorageSource
 }

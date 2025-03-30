@@ -176,9 +176,9 @@ class DatabaseSourceImpl @Inject constructor(
         }
     }
 
-    private suspend fun startNextRound() {
+    override suspend fun startNextRound() {
         val gameRoomId = prefs.getCurrentGameRoomId()
-        val game = firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).get().result?.toObject(Game::class.java)
+        val game = firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).get().await().toObject(Game::class.java)
         val currentRound = game?.rounds?.last()
         val nextRoundNumber = currentRound?.number?.plus(1) ?: 1
         val nextRoundType = when (currentRound?.type) {
@@ -197,5 +197,12 @@ class DatabaseSourceImpl @Inject constructor(
         firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).update(
             FIELD_ROUNDS, updatedRounds,
         ).await()
+    }
+
+    override suspend fun finishGame() {
+        val gameRoomId = prefs.getCurrentGameRoomId()
+        val game = firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).get().await().toObject(Game::class.java)
+        val updatedGame = game?.copy(status = GAME_STATUS_FINISHED)
+        firestore.collection(COLLECTION_GAMES).document(gameRoomId.toString()).set(updatedGame!!).await()
     }
 }

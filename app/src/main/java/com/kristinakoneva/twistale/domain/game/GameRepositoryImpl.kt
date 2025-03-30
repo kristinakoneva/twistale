@@ -5,11 +5,14 @@ import com.kristinakoneva.twistale.data.database.DatabaseSource
 import com.kristinakoneva.twistale.data.prefs.PreferencesSource
 import com.kristinakoneva.twistale.data.storage.StorageSource
 import com.kristinakoneva.twistale.domain.game.mappers.toDomainGame
+import com.kristinakoneva.twistale.domain.game.mappers.toStories
 import com.kristinakoneva.twistale.domain.game.models.Game
+import com.kristinakoneva.twistale.domain.game.models.Story
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 
@@ -36,12 +39,8 @@ class GameRepositoryImpl @Inject constructor(
     }
 
     override suspend fun endGame() = withContext(Dispatchers.IO) {
-        database.endGame()
-    }
-
-    override suspend fun leaveGameRoom() = withContext(Dispatchers.IO) {
         storage.deleteAllImagesForGame(preferences.getCurrentGameRoomId())
-        database.leaveGameRoom()
+        database.endGame()
     }
 
     override suspend fun isHostPlayer(): Boolean = withContext(Dispatchers.IO) {
@@ -64,6 +63,11 @@ class GameRepositoryImpl @Inject constructor(
         if (isHostPlayer()) {
             database.finishGame()
         }
+    }
+
+    override suspend fun getAllStories(): List<Story> = withContext(Dispatchers.IO) {
+        val game = database.observeGameRoom().first()
+        game?.toDomainGame()?.toStories() ?: emptyList()
     }
 
     override suspend fun submitDrawingRound(taleId: Int, image: Bitmap) = withContext(Dispatchers.IO) {

@@ -14,8 +14,6 @@ interface DatabaseSource {
 
     suspend fun endGame()
 
-    suspend fun leaveGameRoom()
-
     suspend fun isHostPlayer(): Boolean
 
     suspend fun submitRound(taleId: Int, input: String)

@@ -35,6 +35,7 @@ data object GameRoomRoute
 @Composable
 fun GameRoomScreen(
     onNavigateToGamePlay: () -> Unit,
+    onNavigateToStory: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GameRoomViewModel = hiltViewModel(),
 ) {
@@ -43,6 +44,7 @@ fun GameRoomScreen(
         viewModel.navigation.collect { event ->
             when (event) {
                 is GameRoomEvent.NavigateToGamePlay -> onNavigateToGamePlay()
+                is GameRoomEvent.NavigateToStory -> onNavigateToStory()
             }
         }
     }

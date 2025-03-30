@@ -36,6 +36,11 @@ fun NavHost() {
                     navController.navigate(GamePlayRoute, navOptions = navOptions {
                         popUpTo(GameRoomRoute) { inclusive = true }
                     })
+                },
+                onNavigateToStory = {
+                    navController.navigate(StoryRoute, navOptions = navOptions {
+                        popUpTo(GamePlayRoute) { inclusive = true }
+                    })
                 }
             )
         }
@@ -54,7 +59,13 @@ fun NavHost() {
             )
         }
         composable<StoryRoute> {
-            StoryScreen()
+            StoryScreen(
+                onNavigateToGameRoom = {
+                    navController.navigate(GameRoomRoute, navOptions = navOptions {
+                        popUpTo(StoryRoute) { inclusive = true }
+                    })
+                },
+            )
         }
     }
 }

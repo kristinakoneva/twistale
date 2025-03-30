@@ -71,6 +71,9 @@ class DatabaseSourceImpl @Inject constructor(
                 val game = snapshot.toObject(Game::class.java)
                 if (game != null) {
                     trySend(game)
+                } else {
+                    Log.d(TAG, "Game Room Observing in source - No data found.")
+                    trySend(null)
                 }
             }
         }
@@ -83,16 +86,6 @@ class DatabaseSourceImpl @Inject constructor(
 
     override suspend fun endGame() {
         firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).delete().await()
-        prefs.setCurrentGameRoomId(-1)
-    }
-
-    override suspend fun leaveGameRoom() {
-        val gameStatus = firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).get().await().data?.get(
-            FIELD_STATUS
-        ) as String
-        if (gameStatus == GAME_STATUS_IN_PROGRESS) {
-            firestore.collection(COLLECTION_GAMES).document(prefs.getCurrentGameRoomId().toString()).delete().await()
-        }
         prefs.setCurrentGameRoomId(-1)
     }
 

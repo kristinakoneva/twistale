@@ -2,6 +2,7 @@ package com.kristinakoneva.twistale.domain.game
 
 import android.graphics.Bitmap
 import com.kristinakoneva.twistale.domain.game.models.Game
+import com.kristinakoneva.twistale.domain.game.models.Story
 import kotlinx.coroutines.flow.Flow
 
 interface GameRepository {
@@ -16,8 +17,6 @@ interface GameRepository {
 
     suspend fun endGame()
 
-    suspend fun leaveGameRoom()
-
     suspend fun isHostPlayer(): Boolean
 
     fun getCurrentGameRoomId(): Int
@@ -29,4 +28,6 @@ interface GameRepository {
     suspend fun startNextRound()
 
     suspend fun finishGame()
+
+    suspend fun getAllStories(): List<Story>
 }

@@ -5,6 +5,8 @@ import com.kristinakoneva.twistale.domain.game.models.GameStatus
 import com.kristinakoneva.twistale.domain.game.models.Player
 import com.kristinakoneva.twistale.domain.game.models.Round
 import com.kristinakoneva.twistale.domain.game.models.RoundType
+import com.kristinakoneva.twistale.domain.game.models.Story
+import com.kristinakoneva.twistale.domain.game.models.StoryPart
 import com.kristinakoneva.twistale.domain.game.models.Tale
 import com.kristinakoneva.twistale.data.database.models.Game as DataGame
 import com.kristinakoneva.twistale.data.database.models.Player as DataPlayer
@@ -35,3 +37,23 @@ fun DataTale.toDomainTale(players: List<DataPlayer>) = Tale(
     player = players.find { it.userId == playerId }?.toDomainPlayer()!!,
     input = input,
 )
+
+fun Game.toStories(): List<Story> {
+    val stories = mutableListOf<Story>()
+    // each round has multiple stories in it marked with taleId, combine them into one and create several stories
+    val storiesMap = mutableMapOf<Int, MutableList<StoryPart>>()
+    for (round in rounds) {
+        for (tale in round.tales) {
+            val storyPart = StoryPart(
+                player = tale.player,
+                input = tale.input,
+                roundType = round.type,
+            )
+            storiesMap.getOrPut(tale.id) { mutableListOf() }.add(storyPart)
+        }
+    }
+    for ((_, storyParts) in storiesMap) {
+        stories.add(Story(storyParts))
+    }
+    return stories
+}

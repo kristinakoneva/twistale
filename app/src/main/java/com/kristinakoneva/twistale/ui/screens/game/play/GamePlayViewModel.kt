@@ -85,7 +85,7 @@ class GamePlayViewModel @Inject constructor(
     }
 
     fun onLeaveGameRoom() = viewModelScope.launch {
-        gameRepository.leaveGameRoom()
+        gameRepository.endGame()
         navigationChannel.send(GamePlayEvent.NavigateToGameRoom)
     }
 
@@ -106,7 +106,7 @@ class GamePlayViewModel @Inject constructor(
     }
 
     private suspend fun checkIfShouldStartNextRoundOrEndGame(game: Game) {
-        if (game.rounds.size >= game.players.size) {
+        if (game.rounds.size >= game.players.size && game.rounds.last().tales.size == game.players.size) {
             gameRepository.finishGame()
             return
         }

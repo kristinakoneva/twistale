@@ -1,6 +1,5 @@
 package com.kristinakoneva.twistale.ui.screens.game.play
 
-import android.graphics.Bitmap
 import com.kristinakoneva.twistale.domain.game.models.RoundType
 
 data class GamePlayState(

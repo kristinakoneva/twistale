@@ -83,12 +83,15 @@ class GameRoomViewModel @Inject constructor(
                 if (game.status == GameStatus.IN_PROGRESS) {
                     navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
                 }
+                if (game.status == GameStatus.FINISHED) {
+                    navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
+                }
             }
         }
     }
 
     fun leaveGameRoom() = viewModelScope.launch {
-        gameRepository.leaveGameRoom()
+        gameRepository.endGame()
         stateFlow.update {
             it.copy(roomId = null)
         }

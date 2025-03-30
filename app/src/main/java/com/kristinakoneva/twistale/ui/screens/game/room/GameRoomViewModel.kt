@@ -38,8 +38,8 @@ class GameRoomViewModel @Inject constructor(
                 stateFlow.update {
                     it.copy(roomId = gameRepository.getCurrentGameRoomId())
                 }
+                startWaitingForGameToStart()
             }
-            startWaitingForGameToStart()
         }
     }
 
@@ -47,6 +47,7 @@ class GameRoomViewModel @Inject constructor(
         stateFlow.update {
             it.copy(roomId = gameRepository.createGameRoom(), isHostPlayer = true)
         }
+        startWaitingForGameToStart()
     }
 
     fun joinGameRoom(gameRoomId: Int) = viewModelScope.launch {
@@ -54,6 +55,7 @@ class GameRoomViewModel @Inject constructor(
         stateFlow.update {
             it.copy(roomId = gameRoomId)
         }
+        startWaitingForGameToStart()
     }
 
     fun startGame() = viewModelScope.launch {

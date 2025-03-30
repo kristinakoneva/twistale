@@ -9,13 +9,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -39,6 +42,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -91,20 +95,29 @@ private fun GamePlayContent(
         RoundType.DRAWING -> "Drawing round"
     }
     Scaffold(modifier = modifier) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            Button(onClick = onLeaveGameRoom) {
-                Text("Leave game")
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                Button(onClick = onLeaveGameRoom) {
+                    Text("Leave game")
+                }
             }
-            Text(text = title)
+            Text(text = "Round type: $title")
             if (state.isWaiting) {
-                Text("Waiting for other players")
+                Text("Waiting for other players...", textAlign = TextAlign.Center)
+                AsyncImage(
+                    model = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3V4YW40c3ZybHc0MW10YW84dWQ1NnUxYndicTEyazlydWtkajN1YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/um2kBnfo55iW4ZH1Fa/giphy.gif",
+                    contentDescription = "Waiting for other players",
+                )
             } else {
                 when (state.roundType) {
                     RoundType.WRITING -> {
-                        AsyncImage(
-                            model = state.drawingHint,
-                            contentDescription = "Drawing hint",
-                        )
                         OutlinedTextField(
                             value = state.textInput,
                             textStyle = TextStyle(color = Color.Black),
@@ -120,7 +133,10 @@ private fun GamePlayContent(
                                 focusManager.clearFocus()
                             },
                         )
-
+                        AsyncImage(
+                            model = state.drawingHint,
+                            contentDescription = "Drawing hint",
+                        )
                     }
 
                     RoundType.DRAWING -> {

@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.gif)
     implementation(platform(libs.firebase.bom))
     implementation(libs.serialization.json)
 }

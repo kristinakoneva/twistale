@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,10 +26,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -145,13 +142,12 @@ fun AuthScreenContent(
                 .fillMaxWidth()
                 .padding(horizontal = spacing_3),
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         if (!isLogin) {
             OutlinedTextField(
                 value = name,
-                textStyle = TextStyle(color = Color.Black),
                 onValueChange = onNameValueChange,
                 label = { Text("Name") },
                 modifier = Modifier
@@ -163,7 +159,7 @@ fun AuthScreenContent(
                 keyboardActions = KeyboardActions {
                     focusManager.clearFocus()
                 },
-                isError = !isNameValid
+                isError = !isNameValid,
             )
             if (!isNameValid) {
                 Text("Name cannot be empty!", color = MaterialTheme.colorScheme.error)
@@ -174,7 +170,6 @@ fun AuthScreenContent(
             value = email,
             onValueChange = { onEmailValueChange(it) },
             label = { Text("Email") },
-            textStyle = TextStyle(color = Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = spacing_1),
@@ -184,7 +179,7 @@ fun AuthScreenContent(
             keyboardActions = KeyboardActions {
                 focusManager.clearFocus()
             },
-            isError = !isEmailValid
+            isError = !isEmailValid,
         )
         if (!isEmailValid) {
             Text("Invalid email address!", color = MaterialTheme.colorScheme.error)
@@ -194,7 +189,6 @@ fun AuthScreenContent(
             value = password,
             onValueChange = { onPasswordValueChange(it) },
             label = { Text("Password") },
-            textStyle = TextStyle(color = Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = spacing_1),
@@ -205,7 +199,7 @@ fun AuthScreenContent(
             keyboardActions = KeyboardActions {
                 focusManager.clearFocus()
             },
-            isError = !isPasswordValid
+            isError = !isPasswordValid,
         )
         if (!isPasswordValid) {
             Text("Invalid password!", color = MaterialTheme.colorScheme.error)
@@ -216,7 +210,6 @@ fun AuthScreenContent(
                 value = confirmPassword,
                 onValueChange = { onConfirmPasswordValueChange(it) },
                 label = { Text("Confirm Password") },
-                textStyle = TextStyle(color = Color.Black),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = spacing_1),
@@ -227,7 +220,7 @@ fun AuthScreenContent(
                 keyboardActions = KeyboardActions {
                     focusManager.clearFocus()
                 },
-                isError = !isConfirmPasswordValid
+                isError = !isConfirmPasswordValid,
             )
             if (!isConfirmPasswordValid) {
                 Text("Passwords do not match!", color = MaterialTheme.colorScheme.error)
@@ -242,11 +235,7 @@ fun AuthScreenContent(
                 .fillMaxWidth()
                 .padding(vertical = spacing_1),
             enabled = isPrimaryButtonEnabled,
-            colors = ButtonDefaults.buttonColors(
-                disabledContainerColor = Color.LightGray,
-                disabledContentColor = Color.Gray
-            ),
-            contentPadding = PaddingValues(spacing_2)
+            contentPadding = PaddingValues(spacing_2),
         ) {
             Text(buttonText.uppercase())
         }
@@ -256,7 +245,7 @@ fun AuthScreenContent(
             modifier = Modifier
                 .padding(top = spacing_3)
                 .fillMaxWidth(),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         OutlinedButton(
@@ -267,7 +256,7 @@ fun AuthScreenContent(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = spacing_1),
-            contentPadding = PaddingValues(spacing_2)
+            contentPadding = PaddingValues(spacing_2),
         ) {
             Text(secondaryButtonText.uppercase())
         }
@@ -315,6 +304,6 @@ fun LoginScreenPreview() {
         isConfirmPasswordValid = true,
         isLogin = true,
         onPrimaryButtonClicked = {},
-        onSecondaryButtonClicked = {}
+        onSecondaryButtonClicked = {},
     )
 }

@@ -71,4 +71,6 @@ dependencies {
     implementation(libs.coil.gif)
     implementation(platform(libs.firebase.bom))
     implementation(libs.serialization.json)
+    implementation(libs.appcompat)
+    implementation(libs.material)
 }

@@ -143,6 +143,7 @@ fun AuthScreenContent(
                 .padding(horizontal = spacing_3),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
         )
 
         if (!isLogin) {

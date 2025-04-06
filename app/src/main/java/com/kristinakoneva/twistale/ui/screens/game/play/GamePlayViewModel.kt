@@ -116,6 +116,11 @@ class GamePlayViewModel @Inject constructor(
     }
 
     fun onSubmit(bitmap: Bitmap? = null) = viewModelScope.launch {
+        stateFlow.update {
+            it.copy(
+                isWaiting = true,
+            )
+        }
         when (stateFlow.value.roundType) {
             RoundType.WRITING -> {
                 gameRepository.submitWritingRound(taleId = currentTaleId, text = stateFlow.value.textInput)

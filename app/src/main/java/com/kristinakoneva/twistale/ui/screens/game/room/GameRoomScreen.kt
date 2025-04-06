@@ -9,15 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -136,7 +131,7 @@ fun GameRoomContent(
                     )
                 }
                 Text(
-                    text = "Ready to play?",
+                    text = "Ready to play? 🤩",
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -145,7 +140,7 @@ fun GameRoomContent(
                 )
                 Spacer(modifier = Modifier.height(spacing_2))
                 Text(
-                    text = "Time to create some tales with unexpected twists!",
+                    text = "Time to create some tales with unexpected twists! 😱",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -156,8 +151,8 @@ fun GameRoomContent(
                 item {
                     Spacer(modifier = Modifier.height(spacing_3))
                     Text(
-                        text = "Create a game room and let your friends join.",
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = "Create a game room and let your friends join 🎮:",
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,
                     )
@@ -172,8 +167,8 @@ fun GameRoomContent(
                 item {
                     Spacer(modifier = Modifier.height(spacing_5))
                     Text(
-                        text = "Join an existing game room.",
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = "Join an existing game room 🤝:",
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,
                     )
@@ -204,50 +199,32 @@ fun GameRoomContent(
             } else {
                 item {
                     Spacer(modifier = Modifier.height(spacing_5))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(end = spacing_1),
-                        )
-                        Text(
-                            text = "Game Room ID: $gameRoomId",
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.fillMaxWidth(),
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
+                    Text(
+                        text = "🏡 Game Room ID: $gameRoomId",
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.fillMaxWidth(),
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                     Spacer(modifier = Modifier.height(spacing_2))
                     Text(
                         text = if (isHostPlayer) "Waiting for players to join..." else "Waiting for the host to start the game...",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.height(spacing_4))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(end = spacing_1),
-                        )
-                        Text(
-                            "Players in the room:",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
+                    Text(
+                        "🤸 Players in the room:",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(modifier = Modifier.height(spacing_1))
                     playersInRoom.forEach { player ->
                         Spacer(modifier = Modifier.height(spacing_1))
                         Text(
-                            text = player.name,
+                            text = "👉 ${player.name}",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Start,

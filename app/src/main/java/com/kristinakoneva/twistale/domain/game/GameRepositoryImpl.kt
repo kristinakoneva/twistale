@@ -75,7 +75,7 @@ class GameRepositoryImpl @Inject constructor(
         val byteArrayOutputStream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
-        val imageUrl =  "$gameId" + "/$taleId" + "/${System.currentTimeMillis()}.png"
+        val imageUrl =  "$gameId" + "/${System.currentTimeMillis()}.png"
         database.submitRound(taleId, storage.uploadImage(byteArray, imageUrl))
     }
 }

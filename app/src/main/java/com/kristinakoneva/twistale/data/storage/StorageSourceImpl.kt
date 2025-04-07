@@ -17,7 +17,7 @@ class StorageSourceImpl @Inject constructor(
 
     override suspend fun deleteAllImagesForGame(gameId: Int) {
         val storageRef = firebaseStorage.reference.child("images")
-        val gameData = storageRef.child("$gameId")
+        val gameData = storageRef.child("/$gameId")
         val listResult = gameData.listAll().await()
         for (item in listResult.items) {
             item.delete().await()

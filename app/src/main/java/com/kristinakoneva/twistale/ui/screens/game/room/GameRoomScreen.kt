@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -95,7 +96,9 @@ fun GameRoomContent(
 ) {
     val focusManager = LocalFocusManager.current
 
-    Scaffold { padding ->
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+    ) { padding ->
         LazyColumn(
             modifier = modifier
                 .padding(horizontal = spacing_3)

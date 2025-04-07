@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,7 +110,10 @@ private fun GamePlayContent(
     val paths = remember { mutableStateListOf<Path>() } // Store completed paths
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) } // For storing the generated bitmap
 
-    Scaffold(modifier = modifier) { innerPadding ->
+    Scaffold(
+        modifier = modifier,
+        contentWindowInsets = WindowInsets(0.dp),
+    ) { innerPadding ->
         Column(
             Modifier
                 .padding(innerPadding)

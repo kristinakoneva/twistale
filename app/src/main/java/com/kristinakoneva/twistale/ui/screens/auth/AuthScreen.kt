@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kristinakoneva.twistale.ui.theme.spacing_1
@@ -126,91 +129,74 @@ fun AuthScreenContent(
         else isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid &&
             name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = spacing_3)
-            .imePadding(),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.systemBarsPadding())
-        Text(
-            text = titleText,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = spacing_3),
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-        )
-
-        if (!isLogin) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = onNameValueChange,
-                label = { Text("Name") },
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = spacing_3)
+                .imePadding(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Spacer(modifier = Modifier.systemBarsPadding())
+            Text(
+                text = titleText,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = spacing_2),
+                    .padding(horizontal = spacing_3),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            if (!isLogin) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = onNameValueChange,
+                    label = { Text("Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = spacing_2),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions {
+                        focusManager.clearFocus()
+                    },
+                    isError = !isNameValid,
+                )
+                if (!isNameValid) {
+                    Text("Name cannot be empty!", color = MaterialTheme.colorScheme.error)
+                }
+            }
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { onEmailValueChange(it) },
+                label = { Text("Email") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing_1),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions {
                     focusManager.clearFocus()
                 },
-                isError = !isNameValid,
+                isError = !isEmailValid,
             )
-            if (!isNameValid) {
-                Text("Name cannot be empty!", color = MaterialTheme.colorScheme.error)
+            if (!isEmailValid) {
+                Text("Invalid email address!", color = MaterialTheme.colorScheme.error)
             }
-        }
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { onEmailValueChange(it) },
-            label = { Text("Email") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = spacing_1),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions {
-                focusManager.clearFocus()
-            },
-            isError = !isEmailValid,
-        )
-        if (!isEmailValid) {
-            Text("Invalid email address!", color = MaterialTheme.colorScheme.error)
-        }
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { onPasswordValueChange(it) },
-            label = { Text("Password") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = spacing_1),
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions {
-                focusManager.clearFocus()
-            },
-            isError = !isPasswordValid,
-        )
-        if (!isPasswordValid) {
-            Text("Invalid password!", color = MaterialTheme.colorScheme.error)
-        }
-
-        if (!isLogin) {
             OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { onConfirmPasswordValueChange(it) },
-                label = { Text("Confirm Password") },
+                value = password,
+                onValueChange = { onPasswordValueChange(it) },
+                label = { Text("Password") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = spacing_1),
@@ -221,47 +207,69 @@ fun AuthScreenContent(
                 keyboardActions = KeyboardActions {
                     focusManager.clearFocus()
                 },
-                isError = !isConfirmPasswordValid,
+                isError = !isPasswordValid,
             )
-            if (!isConfirmPasswordValid) {
-                Text("Passwords do not match!", color = MaterialTheme.colorScheme.error)
+            if (!isPasswordValid) {
+                Text("Invalid password!", color = MaterialTheme.colorScheme.error)
             }
+
+            if (!isLogin) {
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { onConfirmPasswordValueChange(it) },
+                    label = { Text("Confirm Password") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = spacing_1),
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions {
+                        focusManager.clearFocus()
+                    },
+                    isError = !isConfirmPasswordValid,
+                )
+                if (!isConfirmPasswordValid) {
+                    Text("Passwords do not match!", color = MaterialTheme.colorScheme.error)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(spacing_2))
+
+            Button(
+                onClick = { onPrimaryButtonClicked() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing_1),
+                enabled = isPrimaryButtonEnabled,
+                contentPadding = PaddingValues(spacing_2),
+            ) {
+                Text(buttonText.uppercase())
+            }
+
+            Text(
+                text = descriptionText,
+                modifier = Modifier
+                    .padding(top = spacing_3)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
+
+            OutlinedButton(
+                onClick = {
+                    focusManager.clearFocus()
+                    onSecondaryButtonClicked()
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = spacing_1),
+                contentPadding = PaddingValues(spacing_2),
+            ) {
+                Text(secondaryButtonText.uppercase())
+            }
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
-
-        Spacer(modifier = Modifier.height(spacing_2))
-
-        Button(
-            onClick = { onPrimaryButtonClicked() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = spacing_1),
-            enabled = isPrimaryButtonEnabled,
-            contentPadding = PaddingValues(spacing_2),
-        ) {
-            Text(buttonText.uppercase())
-        }
-
-        Text(
-            text = descriptionText,
-            modifier = Modifier
-                .padding(top = spacing_3)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-        )
-
-        OutlinedButton(
-            onClick = {
-                focusManager.clearFocus()
-                onSecondaryButtonClicked()
-            },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = spacing_1),
-            contentPadding = PaddingValues(spacing_2),
-        ) {
-            Text(secondaryButtonText.uppercase())
-        }
-        Spacer(modifier = Modifier.navigationBarsPadding())
     }
 }
 

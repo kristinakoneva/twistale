@@ -39,7 +39,7 @@ fun StoryPartItem(
         modifier = modifier
             .fillMaxWidth()
             .width(300.dp)
-            .padding(horizontal = spacing_2)
+            .padding(horizontal = spacing_1)
             .clip(shape = MaterialTheme.shapes.small)
             .background(
                 shape = MaterialTheme.shapes.small,

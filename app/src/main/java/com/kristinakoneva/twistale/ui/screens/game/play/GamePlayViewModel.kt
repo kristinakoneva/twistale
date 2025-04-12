@@ -39,14 +39,15 @@ class GamePlayViewModel @Inject constructor(
     private fun observeGame() = viewModelScope.launch {
         gameRepository.observeGameRoom().collectLatest { game ->
             if (game != null) {
-                checkIfShouldNavigateToStory(game)
+                checkIfHasCompletedRound(game)
+                if (checkIfShouldNavigateToStory(game)) return@collectLatest
+
                 val currentRound = game.rounds.last()
                 stateFlow.update {
                     it.copy(
                         roundType = currentRound.type,
                     )
                 }
-
 
                 if (currentRound.number != 1) {
                     val previousRound = game.rounds[game.rounds.size - 2]
@@ -78,7 +79,7 @@ class GamePlayViewModel @Inject constructor(
                         roundType = game.rounds.last().type,
                     )
                 }
-                checkIfHasCompletedRound(game)
+
                 checkIfShouldStartNextRoundOrEndGame(game)
             } else {
                 onEndGameConfirmed()
@@ -139,11 +140,7 @@ class GamePlayViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            try {
-                gameRepository.submitWritingRound(taleId = currentTaleId, text = stateFlow.value.textInput)
-            } catch (ex: Exception) {
-                onEndGameConfirmed()
-            }
+            gameRepository.submitWritingRound(taleId = currentTaleId, text = stateFlow.value.textInput)
         }
     }
 
@@ -154,17 +151,15 @@ class GamePlayViewModel @Inject constructor(
             )
         }
         viewModelScope.launch {
-            try {
-                gameRepository.submitDrawingRound(taleId = currentTaleId, image = bitmap)
-            } catch (ex: Exception) {
-                onEndGameConfirmed()
-            }
+            gameRepository.submitDrawingRound(taleId = currentTaleId, image = bitmap)
         }
     }
 
-    private fun checkIfShouldNavigateToStory(game: Game) {
+    private fun checkIfShouldNavigateToStory(game: Game): Boolean {
         if (game.status == GameStatus.FINISHED) {
             navigationChannel.trySend(GamePlayEvent.NavigateToStory)
+            return true
         }
+        return false
     }
 }

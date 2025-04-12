@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -81,13 +82,14 @@ private fun StoryContent(
     ) {
         if (shouldShowEnGameAlertDialog) {
             AlertDialog(
+                title = "End game",
                 description = "Are you sure you want to end the game? 👀 " +
-                    "This will delete all the stories related to this game for everybody. 🚨",
+                    "This will delete all tales related to this game for everybody. 🚨",
                 onConfirmClick = onEndGameConfirmed,
                 onDismissRequest = onDismissDialog,
             )
         }
-        Column(modifier = Modifier.padding(horizontal = spacing_3)) {
+        Column(modifier = Modifier.systemBarsPadding().padding(horizontal = spacing_3)) {
             Spacer(modifier = Modifier.height(spacing_3))
             Row {
                 Spacer(modifier = Modifier.weight(1f))

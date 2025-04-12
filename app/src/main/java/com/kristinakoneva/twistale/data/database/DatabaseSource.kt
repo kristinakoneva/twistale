@@ -21,4 +21,6 @@ interface DatabaseSource {
     suspend fun startNextRound()
 
     suspend fun finishGame()
+
+    suspend fun leaveGameRoom()
 }

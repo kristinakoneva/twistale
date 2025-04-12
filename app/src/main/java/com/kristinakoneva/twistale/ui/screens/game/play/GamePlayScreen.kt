@@ -68,7 +68,8 @@ fun GamePlayScreen(
         }
         if (state.shouldShowEndGameAlertDialog) {
             AlertDialog(
-                description = "Are you sure you want to end the game? 👀 " +
+                title = "Leave game",
+                description = "Are you sure you want to leave the game? 👀 " +
                     "This will end the game for everybody in this game room. 🚨",
                 onConfirmClick = viewModel::onEndGameConfirmed,
                 onDismissRequest = viewModel::onDismissDialog,

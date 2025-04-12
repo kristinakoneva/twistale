@@ -20,7 +20,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kristinakoneva.twistale.ui.theme.spacing_1
@@ -30,6 +32,7 @@ import com.kristinakoneva.twistale.ui.theme.spacing_4
 
 @Composable
 fun AlertDialog(
+    title: String,
     description: String,
     onConfirmClick: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -48,7 +51,13 @@ fun AlertDialog(
                 .padding(spacing_3),
         ) {
             Row {
-                Spacer(Modifier.weight(1f))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f),
+                    overflow = TextOverflow.Ellipsis,
+                )
                 IconButton(
                     onClick = onDismissRequest,
                     modifier = Modifier.offset(x = spacing_2, y = -spacing_2),

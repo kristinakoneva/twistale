@@ -107,7 +107,9 @@ fun GameRoomContent(
     Scaffold { padding ->
         if (shouldShowLeaveRoomAlertDialog) {
             AlertDialog(
-                description = "Are you sure you want to leave the game room? 👀",
+                title = "Leave room 🚶‍➡️🚪",
+                description = "Are you sure you want to leave the game room? 👀 " +
+                    "If you are the host player, you'll close the room for everybody.",
                 onDismissRequest = onDismissDialog,
                 onConfirmClick = onLeaveGameRoomConfirmed,
             )
@@ -143,7 +145,7 @@ fun GameRoomContent(
                     Image(
                         painter = painterResource(id = R.drawable.ic_twistale_big),
                         contentDescription = null,
-                        modifier = Modifier.size(200.dp),
+                        modifier = Modifier.size(150.dp),
                     )
                 }
                 Text(

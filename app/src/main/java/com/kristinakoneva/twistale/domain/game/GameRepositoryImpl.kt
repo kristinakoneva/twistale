@@ -78,6 +78,14 @@ class GameRepositoryImpl @Inject constructor(
         game?.toDomainGame()?.toStories() ?: emptyList()
     }
 
+    override suspend fun leaveGameRoom() = withContext(Dispatchers.IO) {
+        if (isHostPlayer()) {
+            endGame()
+        } else {
+            database.leaveGameRoom()
+        }
+    }
+
     override suspend fun submitDrawingRound(taleId: Int, image: Bitmap) = withContext(Dispatchers.IO) {
         val gameId = preferences.getCurrentGameRoomId()
         val byteArrayOutputStream = ByteArrayOutputStream()

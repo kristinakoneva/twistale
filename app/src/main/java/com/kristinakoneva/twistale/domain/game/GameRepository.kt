@@ -30,4 +30,6 @@ interface GameRepository {
     suspend fun finishGame()
 
     suspend fun getAllStories(): List<Story>
+
+    suspend fun leaveGameRoom()
 }

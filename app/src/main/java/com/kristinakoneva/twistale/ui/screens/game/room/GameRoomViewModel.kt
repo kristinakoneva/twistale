@@ -79,11 +79,14 @@ class GameRoomViewModel @Inject constructor(
                             isHostPlayer = game.players.first { player -> player.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer
                         )
                     }
-                    if (game.players.first { it.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer && game.players.size >= MIN_PLAYERS) {
-                        stateFlow.update {
-                            it.copy(canStartGame = true)
-                        }
+
+                    stateFlow.update {
+                        it.copy(
+                            canStartGame = game.players.first { it.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer &&
+                                game.players.size >= MIN_PLAYERS,
+                        )
                     }
+
                     if (game.status == GameStatus.IN_PROGRESS) {
                         navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
                     }
@@ -124,6 +127,6 @@ class GameRoomViewModel @Inject constructor(
         stateFlow.update {
             it.copy(shouldShowLeaveRoomAlertDialog = false, roomId = null)
         }
-        gameRepository.endGame()
+        gameRepository.leaveGameRoom()
     }
 }

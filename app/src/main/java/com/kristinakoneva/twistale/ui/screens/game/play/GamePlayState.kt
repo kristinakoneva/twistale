@@ -9,4 +9,5 @@ data class GamePlayState(
     val textHint: String = "",
     val drawingHint: String = "",
     val isWaiting: Boolean = false,
+    val shouldShowEndGameAlertDialog: Boolean = false,
 )

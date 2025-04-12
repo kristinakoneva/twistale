@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -35,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kristinakoneva.twistale.R
 import com.kristinakoneva.twistale.domain.game.models.Player
+import com.kristinakoneva.twistale.ui.dialogs.AlertDialog
 import com.kristinakoneva.twistale.ui.theme.spacing_1
 import com.kristinakoneva.twistale.ui.theme.spacing_2
 import com.kristinakoneva.twistale.ui.theme.spacing_3
@@ -63,6 +63,8 @@ fun GameRoomScreen(
     }
     viewModel.state.collectAsStateWithLifecycle().value.let { state ->
         GameRoomContent(
+            shouldShowLeaveRoomAlertDialog = state.shouldShowLeaveRoomAlertDialog,
+            userFirstName = state.userFirstName,
             gameRoomId = state.roomId,
             isHostPlayer = state.isHostPlayer,
             playersInRoom = state.playersInRoom,
@@ -75,13 +77,17 @@ fun GameRoomScreen(
             onRoomIdInputChange = viewModel::onRoomIdInputFieldValueChanged,
             canStartGame = state.canStartGame,
             startGame = viewModel::startGame,
-            leaveGameRoom = viewModel::leaveGameRoom,
+            leaveGameRoom = viewModel::onLeaveGameRoomClick,
+            onDismissDialog = viewModel::onDismissDialog,
+            onLeaveGameRoomConfirmed = viewModel::onLeaveGameRoomConfirmed,
         )
     }
 }
 
 @Composable
 fun GameRoomContent(
+    shouldShowLeaveRoomAlertDialog: Boolean,
+    userFirstName: String,
     gameRoomId: Int?,
     canStartGame: Boolean,
     playersInRoom: List<Player>,
@@ -92,13 +98,20 @@ fun GameRoomContent(
     joinGameRoom: () -> Unit,
     leaveGameRoom: () -> Unit,
     startGame: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onLeaveGameRoomConfirmed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0.dp),
-    ) { padding ->
+    Scaffold { padding ->
+        if (shouldShowLeaveRoomAlertDialog) {
+            AlertDialog(
+                description = "Are you sure you want to leave the game room? 👀",
+                onDismissRequest = onDismissDialog,
+                onConfirmClick = onLeaveGameRoomConfirmed,
+            )
+        }
         LazyColumn(
             modifier = modifier
                 .padding(horizontal = spacing_3)
@@ -134,7 +147,7 @@ fun GameRoomContent(
                     )
                 }
                 Text(
-                    text = "Ready to play? 🤩",
+                    text = "Hi $userFirstName! 👋\nReady to play? 🤩",
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
@@ -233,7 +246,7 @@ fun GameRoomContent(
                             textAlign = TextAlign.Start,
                         )
                     }
-                    Spacer(modifier = Modifier.height(spacing_2))
+                    Spacer(modifier = Modifier.height(spacing_1))
                     if (isHostPlayer) {
                         Button(
                             onClick = startGame,

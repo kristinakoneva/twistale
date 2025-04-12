@@ -30,13 +30,29 @@ class StoryViewModel @Inject constructor(
             }
             gameRepository.observeGameRoom().collect { game ->
                 if (game == null) {
+                    gameRepository.endGame()
                     navigationChannel.send(StoryEvent.NavigateToGameRoom)
                 }
             }
         }
     }
 
-    fun endGame() = viewModelScope.launch {
+    fun onEndGameClick() {
+        stateFlow.update {
+            it.copy(shouldShowEnGameAlertDialog = true)
+        }
+    }
+
+    fun onDismissDialog() {
+        stateFlow.update {
+            it.copy(shouldShowEnGameAlertDialog = false)
+        }
+    }
+
+    fun onEndGameConfirmed() = viewModelScope.launch {
+        stateFlow.update {
+            it.copy(shouldShowEnGameAlertDialog = false)
+        }
         gameRepository.endGame()
         navigationChannel.send(StoryEvent.NavigateToGameRoom)
     }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -23,6 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kristinakoneva.twistale.domain.game.models.Story
+import com.kristinakoneva.twistale.ui.dialogs.AlertDialog
 import com.kristinakoneva.twistale.ui.screens.game.story.composables.StoryPartItem
 import com.kristinakoneva.twistale.ui.theme.spacing_1
 import com.kristinakoneva.twistale.ui.theme.spacing_2
@@ -46,67 +49,93 @@ fun StoryScreen(
             }
         }
     }
-    Scaffold (
+    Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
-    ){ padding ->
+    ) { padding ->
         viewModel.state.collectAsStateWithLifecycle().value.let { state ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Column(modifier = Modifier.padding(horizontal = spacing_3)) {
-                    Spacer(modifier = Modifier.height(spacing_3))
-                    Row {
-                        Spacer(modifier = Modifier.weight(1f))
-                        Button(onClick = viewModel::endGame) {
-                            Text(text = "End game")
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(spacing_4))
-                    Text(
-                        text = "Story Time 🎉",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Spacer(modifier = Modifier.height(spacing_1))
-                    Text(
-                        text = "Explore all the tales you helped create together! 💪",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Spacer(modifier = Modifier.height(spacing_5))
-                }
-                state.stories.forEachIndexed { index, story ->
-                    Text(
-                        text = "Tale #${index + 1}",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = spacing_3),
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Spacer(modifier = Modifier.height(spacing_2))
-                    LazyRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(spacing_2)
-                    ) {
-                        items(story.storyParts.size) { index ->
-                            StoryPartItem(
-                                item = story.storyParts[index],
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(spacing_3))
+            StoryContent(
+                shouldShowEnGameAlertDialog = state.shouldShowEnGameAlertDialog,
+                stories = state.stories,
+                modifier = Modifier.padding(padding),
+                onEndGameClick = viewModel::onEndGameClick,
+                onEndGameConfirmed = viewModel::onEndGameConfirmed,
+                onDismissDialog = viewModel::onDismissDialog,
+            )
+        }
+    }
+}
+
+@Composable
+private fun StoryContent(
+    shouldShowEnGameAlertDialog: Boolean,
+    stories: List<Story>,
+    onEndGameClick: () -> Unit,
+    onEndGameConfirmed: () -> Unit,
+    onDismissDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
+        if (shouldShowEnGameAlertDialog) {
+            AlertDialog(
+                description = "Are you sure you want to end the game? 👀 " +
+                    "This will delete all the stories related to this game for everybody. 🚨",
+                onConfirmClick = onEndGameConfirmed,
+                onDismissRequest = onDismissDialog,
+            )
+        }
+        Column(modifier = Modifier.padding(horizontal = spacing_3)) {
+            Spacer(modifier = Modifier.height(spacing_3))
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                Button(onClick = onEndGameClick) {
+                    Text(text = "End game")
                 }
             }
+            Spacer(modifier = Modifier.height(spacing_4))
+            Text(
+                text = "Story Time 🎉",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.height(spacing_1))
+            Text(
+                text = "Explore all the tales you helped create together! 💪",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            Spacer(modifier = Modifier.height(spacing_5))
+        }
+        stories.forEachIndexed { index, story ->
+            Text(
+                text = "Tale #${index + 1}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = spacing_3),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(modifier = Modifier.height(spacing_1))
+            LazyRow(
+                modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
+                horizontalArrangement = Arrangement.spacedBy(spacing_2)
+            ) {
+                items(story.storyParts.size) { index ->
+                    StoryPartItem(
+                        item = story.storyParts[index],
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(spacing_3))
         }
     }
 }

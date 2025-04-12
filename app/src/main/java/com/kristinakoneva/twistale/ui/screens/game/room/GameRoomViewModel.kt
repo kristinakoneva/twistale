@@ -34,10 +34,10 @@ class GameRoomViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            stateFlow.update {
+                it.copy(userFirstName = userRepository.getCurrentUser()?.displayName.orEmpty())
+            }
             if (gameRepository.getCurrentGameRoomId() != -1) {
-                stateFlow.update {
-                    it.copy(roomId = gameRepository.getCurrentGameRoomId())
-                }
                 startWaitingForGameToStart()
             }
         }
@@ -69,33 +69,61 @@ class GameRoomViewModel @Inject constructor(
     }
 
     private suspend fun startWaitingForGameToStart() {
-        gameRepository.observeGameRoom().collectLatest { game ->
-            if (game != null) {
-                stateFlow.update {
-                    it.copy(
-                        playersInRoom = game.players,
-                        isHostPlayer = game.players.first { player -> player.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer
-                    )
-                }
-                if (game.players.first { it.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer && game.players.size >= MIN_PLAYERS) {
+        try {
+            gameRepository.observeGameRoom().collectLatest { game ->
+                if (game != null) {
                     stateFlow.update {
-                        it.copy(canStartGame = true)
+                        it.copy(
+                            roomId = gameRepository.getCurrentGameRoomId(),
+                            playersInRoom = game.players,
+                            isHostPlayer = game.players.first { player -> player.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer
+                        )
                     }
+                    if (game.players.first { it.userId == userRepository.getCurrentUser()?.uid }.isHostPlayer && game.players.size >= MIN_PLAYERS) {
+                        stateFlow.update {
+                            it.copy(canStartGame = true)
+                        }
+                    }
+                    if (game.status == GameStatus.IN_PROGRESS) {
+                        navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
+                    }
+                    if (game.status == GameStatus.FINISHED) {
+                        navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
+                    }
+                } else {
+                    stateFlow.update {
+                        GameRoomState()
+                    }
+                    gameRepository.endGame()
+                    return@collectLatest
                 }
-                if (game.status == GameStatus.IN_PROGRESS) {
-                    navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
-                }
-                if (game.status == GameStatus.FINISHED) {
-                    navigationChannel.send(GameRoomEvent.NavigateToGamePlay)
-                }
+            }
+        } catch (ex: Exception) {
+            stateFlow.update {
+                GameRoomState()
+            }
+            viewModelScope.launch {
+                gameRepository.endGame()
             }
         }
     }
 
-    fun leaveGameRoom() = viewModelScope.launch {
-        gameRepository.endGame()
+    fun onLeaveGameRoomClick() {
         stateFlow.update {
-            it.copy(roomId = null)
+            it.copy(shouldShowLeaveRoomAlertDialog = true)
         }
+    }
+
+    fun onDismissDialog() {
+        stateFlow.update {
+            it.copy(shouldShowLeaveRoomAlertDialog = false)
+        }
+    }
+
+    fun onLeaveGameRoomConfirmed() = viewModelScope.launch {
+        stateFlow.update {
+            it.copy(shouldShowLeaveRoomAlertDialog = false, roomId = null)
+        }
+        gameRepository.endGame()
     }
 }

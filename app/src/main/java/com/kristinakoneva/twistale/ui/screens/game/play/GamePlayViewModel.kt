@@ -80,11 +80,28 @@ class GamePlayViewModel @Inject constructor(
                 }
                 checkIfHasCompletedRound(game)
                 checkIfShouldStartNextRoundOrEndGame(game)
+            } else {
+                onEndGameConfirmed()
             }
         }
     }
 
-    fun onLeaveGameRoom() = viewModelScope.launch {
+    fun onEndGameClick() {
+        stateFlow.update {
+            it.copy(shouldShowEndGameAlertDialog = true)
+        }
+    }
+
+    fun onDismissDialog() {
+        stateFlow.update {
+            it.copy(shouldShowEndGameAlertDialog = false)
+        }
+    }
+
+    fun onEndGameConfirmed() = viewModelScope.launch {
+        stateFlow.update {
+            it.copy(shouldShowEndGameAlertDialog = false)
+        }
         gameRepository.endGame()
         navigationChannel.send(GamePlayEvent.NavigateToGameRoom)
     }
@@ -115,19 +132,32 @@ class GamePlayViewModel @Inject constructor(
         }
     }
 
-    fun onSubmit(bitmap: Bitmap? = null) = viewModelScope.launch {
+    fun onSubmitWritingRound() {
         stateFlow.update {
             it.copy(
                 isWaiting = true,
             )
         }
-        when (stateFlow.value.roundType) {
-            RoundType.WRITING -> {
+        viewModelScope.launch {
+            try {
                 gameRepository.submitWritingRound(taleId = currentTaleId, text = stateFlow.value.textInput)
+            } catch (ex: Exception) {
+                onEndGameConfirmed()
             }
+        }
+    }
 
-            RoundType.DRAWING -> {
-                gameRepository.submitDrawingRound(taleId = currentTaleId, image = bitmap!!)
+    fun onSubmitDrawingRound(bitmap: Bitmap) {
+        stateFlow.update {
+            it.copy(
+                isWaiting = true,
+            )
+        }
+        viewModelScope.launch {
+            try {
+                gameRepository.submitDrawingRound(taleId = currentTaleId, image = bitmap)
+            } catch (ex: Exception) {
+                onEndGameConfirmed()
             }
         }
     }

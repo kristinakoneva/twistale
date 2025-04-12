@@ -39,8 +39,16 @@ class GameRepositoryImpl @Inject constructor(
     }
 
     override suspend fun endGame() = withContext(Dispatchers.IO) {
-        storage.deleteAllImagesForGame(preferences.getCurrentGameRoomId())
-        database.endGame()
+        try {
+            storage.deleteAllImagesForGame(preferences.getCurrentGameRoomId())
+        } catch (ex: Exception) {
+            // Do nothing, maybe somebody already deleted the game data
+        }
+        try {
+            database.endGame()
+        } catch (ex: Exception) {
+            // Do nothing, maybe somebody already deleted the game data
+        }
     }
 
     override suspend fun isHostPlayer(): Boolean = withContext(Dispatchers.IO) {
@@ -75,7 +83,7 @@ class GameRepositoryImpl @Inject constructor(
         val byteArrayOutputStream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
-        val imageUrl =  "$gameId" + "/${System.currentTimeMillis()}.png"
+        val imageUrl = "$gameId" + "/${System.currentTimeMillis()}.png"
         database.submitRound(taleId, storage.uploadImage(byteArray, imageUrl))
     }
 }

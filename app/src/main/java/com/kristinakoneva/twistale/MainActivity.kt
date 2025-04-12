@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this,
                     "Oops! 🙈 Something went wrong! 🫣",
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_LONG,
                 ).show()
             }
         }

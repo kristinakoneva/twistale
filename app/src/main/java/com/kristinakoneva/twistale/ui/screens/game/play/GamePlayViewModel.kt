@@ -129,6 +129,7 @@ class GamePlayViewModel @Inject constructor(
             return
         }
         if (game.rounds.last().tales.size == game.players.size) {
+            stateFlow.value = GamePlayState()
             gameRepository.startNextRound()
         }
     }

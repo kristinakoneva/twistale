@@ -3,7 +3,7 @@ _Developed by Kristina Koneva (249013)_
 
 ## 📃 Overview
 
-Twistale is a native mobile Android application inspired by [the "Paper Telephone" game](https://www.thegamegal.com/2011/06/18/paper-telephone/). The app's main goal is to let users create collaborative stories through interactive game rounds.
+Twistale is a native mobile Android application inspired by [the "Paper Telephone" game](https://www.thegamegal.com/2011/06/18/paper-telephone/) developed for educational and learning purposes. The app's main goal is to let users create collaborative stories through interactive game rounds.
 
 The host player creates a game room and other players join the same room by entering its game room number. The game starts with everybody writing an initial phrase. In the next round, each player receives a phrase from another participant and must draw something representing it. Once all players finish drawing, they receive a drawing from someone else and must describe it in text.
 

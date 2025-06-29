@@ -22,8 +22,7 @@ class GameRoomViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        // TODO: Update to 3 after testing
-        private const val MIN_PLAYERS = 2
+        private const val MIN_PLAYERS = 3
     }
 
     private val stateFlow: MutableStateFlow<GameRoomState> by lazy { MutableStateFlow(GameRoomState()) }

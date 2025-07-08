@@ -1,5 +1,5 @@
 # ✍️🌪️🎨 Twistale ✍️🌪️🎨
-_Developed by Kristina Koneva (249013)_
+_Developed by Kristina Koneva (student index number: 249013)_
 
 ## 📃 Overview
 

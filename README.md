@@ -23,7 +23,7 @@ The client-side Android app follows a layer architecture - it contains data, dom
 ## 📦 Component Diagram
 
 
-<img width="725" alt="Twistale Component Diagram" src="https://github.com/user-attachments/assets/0fb3772c-a082-4fc1-aa47-1b498cfc4f4f" />
+<img width="70%" alt="Twistale Component Diagram" src="https://github.com/user-attachments/assets/0fb3772c-a082-4fc1-aa47-1b498cfc4f4f" />
 
 ## 🕸️ Class Diagram
 
@@ -33,28 +33,28 @@ The client-side Android app follows a layer architecture - it contains data, dom
 
 ### 🔒 Authentication Screen
 
-<img width="200" height="400" alt="Register Screen" src="https://github.com/user-attachments/assets/7041bc66-2e86-4ad8-8f2d-716df3884508" display="inline"/>
-<img width="200" height="400" alt="Login Screen" src="https://github.com/user-attachments/assets/0793ea93-94e5-4f4c-872e-92fcf290e3dc" display="inline"/>
+<img width="30%" alt="Register Screen" src="https://github.com/user-attachments/assets/7041bc66-2e86-4ad8-8f2d-716df3884508" display="inline"/>
+<img width="30%" alt="Login Screen" src="https://github.com/user-attachments/assets/0793ea93-94e5-4f4c-872e-92fcf290e3dc" display="inline"/>
 
 ### 🤸 Game Room Screen
 
-<img width="200" height="400" alt="Game Room idle" src="https://github.com/user-attachments/assets/99992dbd-2e0a-4362-8402-c543bd7be692" display="inline"/>
-<img width="200" height="400" alt="Game Room as a host" src="https://github.com/user-attachments/assets/3c81ea61-8243-432c-8253-4ac5a8a0102a" display="inline"/>
-<img width="200" height="400" alt="Game Room as a regular player" src="https://github.com/user-attachments/assets/bbe451fd-d3b1-485d-8590-1321d72785e8" display="inline"/>
+<img width="30%" alt="Game Room idle" src="https://github.com/user-attachments/assets/99992dbd-2e0a-4362-8402-c543bd7be692" display="inline"/>
+<img width="30%" alt="Game Room as a host" src="https://github.com/user-attachments/assets/3c81ea61-8243-432c-8253-4ac5a8a0102a" display="inline"/>
+<img width="30%" alt="Game Room as a regular player" src="https://github.com/user-attachments/assets/bbe451fd-d3b1-485d-8590-1321d72785e8" display="inline"/>
 
 
 ### 🛝 Game Play Screen
 
-<img width="200" height="400" alt="Intial writing round" src="https://github.com/user-attachments/assets/b2b15b86-1c97-4ca9-b1dc-020098b8cc2a" display="inline"/>
-<img width="200" height="400" alt="Waiting" src="https://github.com/user-attachments/assets/4553ddfb-aed7-4d97-b888-51f64beaa424" display="inline"/>
+<img width="30%" alt="Intial writing round" src="https://github.com/user-attachments/assets/b2b15b86-1c97-4ca9-b1dc-020098b8cc2a" display="inline"/>
+<img width="30%" alt="Waiting" src="https://github.com/user-attachments/assets/4553ddfb-aed7-4d97-b888-51f64beaa424" display="inline"/>
 
 <br>
 
-<img width="200" height="400" alt="Writing round" src="https://github.com/user-attachments/assets/73d215e7-07a3-480d-80f2-08fc42772777" display="inline"/>
-<img width="200" height="400" alt="Drawing round" src="https://github.com/user-attachments/assets/062790b6-0b7f-4825-ab0c-626b38526c84" display="inline"/>
+<img width="30%" alt="Writing round" src="https://github.com/user-attachments/assets/73d215e7-07a3-480d-80f2-08fc42772777" display="inline"/>
+<img width="30%" alt="Drawing round" src="https://github.com/user-attachments/assets/062790b6-0b7f-4825-ab0c-626b38526c84" display="inline"/>
 
 ### 📖 Game Story Screen
 
-<img width="200" height="600" alt="Story Screen 1" src="https://github.com/user-attachments/assets/6581fd18-6a22-4d02-9292-9ffca605fea1" display="inline"/>
-<img width="200" height="600" alt="Story Screen 2" src="https://github.com/user-attachments/assets/2563e25a-2d75-4211-91e9-8f31cc1447d0" display="inline"/>
+<img width="30%" alt="Story Screen 1" src="https://github.com/user-attachments/assets/6581fd18-6a22-4d02-9292-9ffca605fea1" display="inline"/>
+<img width="30%" alt="Story Screen 2" src="https://github.com/user-attachments/assets/2563e25a-2d75-4211-91e9-8f31cc1447d0" display="inline"/>
 
